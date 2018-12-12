@@ -31,8 +31,8 @@ platform :ios do
   desc "This will also make sure the profile is up to date"
   lane :beta do
     create_keychain(
-      name: ENV["MATCH_KEYCHAIN_NAME"],
-      password: ENV["MATCH_PASSWORD"],
+      name: "ios-build",
+      password: "travis",
       default_keychain: true,
       unlock: true,
       timeout: 3600,
@@ -41,8 +41,8 @@ platform :ios do
 
     match(
       type: "adhoc", 
-      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
-      keychain_password: ENV["MATCH_PASSWORD"],
+      keychain_name: "ios-build",
+      keychain_password: "travis",
       readonly: true
     )
 
@@ -54,11 +54,15 @@ platform :ios do
       cordova_prepare: false
     )
 
-    hockey(
-      api_token: ENV["HOCKEYAPP_API_KEY"],
-      ipa: ENV["CORDOVA_IOS_RELEASE_BUILD_PATH"],
-      notify: "0"
-    )
+    sh "cd ./platforms/ios"
+    # build_app(export_method: "ad-hoc")${PGYER_APIKEY}
+    pgyer(api_key: ENV["PGYER_APIKEY"], user_key: "ENV["PGYER_USERKEY"]", update_description: "update by fastlane")
+
+    # hockey(
+    #   api_token: ENV["HOCKEYAPP_API_KEY"],
+    #   ipa: ENV["CORDOVA_IOS_RELEASE_BUILD_PATH"],
+    #   notify: "0"
+    # )
   end
 
   desc "Deploy a new version to the App Store"
